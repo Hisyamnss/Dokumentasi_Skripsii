@@ -1,0 +1,112 @@
+alert icmp 3.3.3.3/32 any -> $EXTERNAL_NET any (msg:"DDOS Stacheldraht server spoof"; icmp_id:666; itype:0; reference:arachnids,193; classtype:attempted-dos; sid:224; rev:3;)
+
+alert icmp $EXTERNAL_NET any -> $HOME_NET any (msg:"DDOS Stacheldraht client spoofworks"; icmp_id:1000; itype:0; content:"spoofworks"; reference:arachnids,192; classtype:attempted-dos; sid:227; rev:6;)  
+
+alert icmp $EXTERNAL_NET any -> $HOME_NET any (msg:"DDOS - TFN client command LE"; icmp_id:51201; icmp_seq:0; itype:0; reference:arachnids,183; classtype:attempted-dos; sid:251; rev:3;)
+
+alert tcp $EXTERNAL_NET any -> $HOME_NET 15104 (msg:"DDOS mstream client to handler"; flow:stateless; flags:S,12; reference:arachnids,111; reference:cve,2000-0138; classtype:attempted-dos; sid:249; rev:8;)
+
+
+
+
+
+
+
+
+
+
+
+sql injection: 
+1. alert tcp $EXTERNAL_NET any -> $HOME_NET $HTTP_PORTS (msg:"ALERT TERJADI SERANGAN SQL-INJECTION"; flow:to_server,established; uricontent:"/board.php"; pcre:"/board.php\x3F\w+\x3D[0-9]+\s/Ui"; classtype:web-application-attack; reference:bugtraq,7404; sid:100000108; rev:1;)
+
+2. alert tcp $EXTERNAL_NET any -> $HOME_NET $HTTP_PORTS (msg:"ALERT SQL-INJECTION OpenBB member.php"; flow:to_server,established; uricontent:"/member.php"; pcre:"/member.php\x3F\w+\x3D[0-9]+\s/Ui"; classtype:web-application-attack; reference:bugtraq,7404; sid:100000109; rev:1;)
+
+3. alert tcp $EXTERNAL_NET any -> $HTTP_SERVERS $HTTP_PORTS (msg:"COMMUNITY SQL-INJECTION WIZZ ForumTopicDetails Sql Injection attempt"; flow:to_server,established; uricontent:"/ForumTopicDetails.php"; nocase; uricontent:"TopicID|3D|"; nocase; uricontent:"union"; nocase; uricontent:"select"; nocase; uricontent:"from"; nocase; uricontent:"ForumUser"; nocase; uricontent:"where"; nocase; reference:bugtraq,15410; reference:url,www.osvdb.org/displayvuln.php?osvdb_id=20846; classtype:web-application-attack; sid:100000192; rev:2;)
+
+4. alert tcp $EXTERNAL_NET any -> $HTTP_SERVERS $HTTP_PORTS (msg:"COMMUNITY SQL-INJECTION Diesel Joke Script Sql Injection attempt"; flow:to_server,established; uricontent:"/category.php"; nocase; uricontent:"id="; uricontent:"union"; nocase; uricontent:"select"; nocase; uricontent:"admin"; nocase; reference:bugtraq,18760; classtype:web-application-attack; sid:100000691; rev:2;)
+
+5. alert tcp $EXTERNAL_NET any -> $SQL_SERVERS 139 (msg:"MS-SQL/SMB sp_start_job - program execution"; flow:to_server,established; content:"s|00|p|00|_|00|s|00|t|00|a|00|r|00|t|00|_|00|j|00|o|00|b|00|"; depth:32; offset:32; nocase; classtype:attempted-user; sid:676; rev:6;)
+
+NMAP : 
+1. alert icmp $EXTERNAL_NET any -> $HOME_NET any (msg:"ALERT NMAP SCANNINNG TERDETEKSI"; dsize:0; itype:8; reference:arachnids,162; classtype:attempted-recon; sid:469; rev:3;)
+
+2. alert tcp $EXTERNAL_NET any -> $HOME_NET any (flags:S; msg:"ALERT SYN Scan Detected"; flow:stateless; sid:100001; rev:1;)
+
+3. alert tcp $EXTERNAL_NET any -> $HOME_NET any (flags:F; msg:"ALERT FIN Scan Detected"; flow:stateless; sid:100002; rev:1;)
+
+4. alert tcp $EXTERNAL_NET any -> $HOME_NET any (flags:FPU; msg:"ALERT Xmas Tree Scan Detected"; flow:stateless; sid:100003; rev:1;)
+
+5. alert tcp $EXTERNAL_NET any -> $HOME_NET any (flags:0; msg:"ALERT NULL Scan Detected"; flow:stateless; sid:100004; rev:1;)
+
+6. alert tcp $EXTERNAL_NET any -> $HOME_NET any (flags:A; msg:"ALERT ACK Scan Detected"; flow:stateless; sid:100005; rev:1;)
+
+7. alert udp $EXTERNAL_NET any -> $HOME_NET any (msg:"ALERT UDP Scan Detected"; sid:100006; rev:1;)
+
+8. alert icmp $EXTERNAL_NET any -> $HOME_NET any (itype:8; msg:"ALERT ICMP Echo Scan Detected"; sid:100007; rev:1;)
+
+9. alert ip $EXTERNAL_NET any -> $HOME_NET any (msg:"ALERT IP Protocol Scan Detected"; sid:100008; rev:1;)
+
+10. alert tcp $EXTERNAL_NET any -> $HOME_NET any (flags:FA; msg:"ALERT Maimon Scan Detected"; flow:stateless; sid:100010; rev:1;)
+
+
+
+
+SLOW HTTP : 
+1. alert tcp any any -> $HOME_NET any (msg:"ALERT TERJADI SERANGAN Slow HTTP!!! "; flow:to_server,established; content:"GET"; http_method; threshold:type threshold, track by_src, count 1, seconds 30; classtype:web-application-attack; sid:1000001; rev:1;)
+
+2. alert tcp any any -> $HOME_NET any (msg:"ALERT Basic Slow HTTP GET Detected"; flow:to_server,established; content:"GET"; http_method; threshold:type threshold, track by_src, count 1, seconds 60; classtype:web-application-attack; sid:1001001; rev:1;)
+
+3. alert tcp any any -> $HOME_NET any (msg:"ALERT Slow HTTP POST Detected"; flow:to_server,established; content:"POST"; http_method; threshold:type threshold, track by_src, count 1, seconds 60; classtype:web-application-attack; sid:1001002; rev:1;)
+
+4. alert tcp any any -> $HOME_NET any (msg:"ALERT Slow HTTP POST Detected"; flow:to_server,established; content:"POST"; http_method; threshold:type threshold, track by_src, count 1, seconds 60; classtype:web-application-attack; sid:1001002; rev:1;)
+
+5. alert tcp any any -> $HOME_NET any (msg:"ALERT Slow HTTP with Cookie Header"; flow:to_server,established; content:"Cookie:"; nocase; threshold:type threshold, track by_src, count 1, seconds 60; classtype:web-application-attack; sid:1001004; rev:1;)
+
+
+
+
+
+
+DDOS : 
+1. alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg:"ALERT DDoS Basic Attack Detected"; flags:S; detection_filter:track by_dst, count 10, seconds 1; classtype:attempted-dos; sid:2000001; rev:1;)
+
+2. alert icmp $EXTERNAL_NET any -> $HOME_NET any (msg:"ALERT DDoS ICMP Flood Detected"; itype:8; detection_filter:track by_dst, count 100, seconds 5; classtype:attempted-dos; sid:2001002; rev:1;)
+
+3. alert udp $EXTERNAL_NET any -> $HOME_NET any (msg:"ALERT DDoS UDP Flood Detected"; detection_filter:track by_dst, count 100, seconds 5; classtype:attempted-dos; sid:2001003; rev:1;)
+
+4. alert tcp $EXTERNAL_NET any -> $HOME_NET $HTTP_PORTS (msg:"ALERT DDoS Slowloris Attack Detected"; flow:to_server,established; content:"GET"; http_method; detection_filter:track by_dst, count 1, seconds 60; classtype:attempted-dos; sid:2001005; rev:1;)
+
+5. alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg:"ALERT DDoS Christmas Tree Packet Detected"; flags:FPU; detection_filter:track by_dst, count 100, seconds 5; classtype:attempted-dos; sid:2001006; rev:1;)
+
+
+
+SNMP :
+
+1. alert tcp $EXTERNAL_NET any -> $HOME_NET 705 (msg:"SNMP AgentX/tcp request"; flow:stateless; reference:bugtraq,4088; reference:bugtraq,4089; reference:bugtraq,4132; reference:cve,2002-0012; reference:cve,2002-0013; classtype:attempted-recon; sid:1421; rev:11;) 
+
+2. alert tcp $EXTERNAL_NET any -> $HOME_NET 161 (msg:"SNMP request tcp"; flow:stateless; reference:bugtraq,4088; reference:bugtraq,4089; reference:bugtraq,4132; reference:cve,2002-0012; reference:cve,2002-0013; classtype:attempted-recon; sid:1418; rev:11;) 
+
+3. alert udp $EXTERNAL_NET any -> $HOME_NET 161 (msg:"SNMP request udp"; reference:bugtraq,4088; reference:bugtraq,4089; reference:bugtraq,4132; reference:cve,2002-0012; reference:cve,2002-0013; classtype:attempted-recon; sid:1417; rev:9;)
+
+4. alert udp $EXTERNAL_NET any -> $HOME_NET 161 (msg:"SNMP missing community string attempt"; content:"|04 00|"; depth:15; offset:5; reference:bugtraq,2112; reference:cve,1999-0517; classtype:misc-attack; sid:1893; rev:4;)
+
+5. alert udp $EXTERNAL_NET any -> $HOME_NET 161 (msg:"SNMP null community string attempt"; content:"|04 01 00|"; depth:15; offset:5; reference:bugtraq,2112; reference:bugtraq,8974; reference:cve,1999-0517; classtype:misc-attack; sid:1892; rev:6;)
+
+
+
+POP3: 
+1. alert tcp $EXTERNAL_NET any -> $HOME_NET $HTTP_PORTS (msg:"ALERT POP3 Traffic Detected"; flow:to_server,established; content:"USER"; nocase; sid:1000002; rev:1;)
+
+
+
+xss:
+1. alert tcp $EXTERNAL_NET any -> $HTTP_SERVERS $HTTP_PORTS (msg:"ALERT XSS Attack Detected - Script Tag"; flow:to_server,established; content:"GET "; content:"<script>"; http_uri; nocase; sid:1000010; rev:1;)
+
+telnet 
+1. alert tcp $TELNET_SERVERS 23 -> $EXTERNAL_NET any (msg:"TELNET root login"; flow:from_server,established; content:"login|3A| root"; classtype:suspicious-login; sid:719; rev:7;)
+
+
+
+
+
+
