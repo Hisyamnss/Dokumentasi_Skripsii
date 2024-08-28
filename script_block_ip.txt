@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Setup path variables
+LOGFILE="/var/log/snort/snort.alert.fast"
+BLOCKED_IP_LIST="/var/log/snort/blocked_ips.txt"
+
+# buat atau periksa file pada daftar ip yang di blokir
+touch $BLOCKED_IP_LIST
+
+# deklarasi asosiatif array
+declare -A blocked_ips
+
+# muat ip yang diblokir ke dalam array dari file blocked_ips
+while read ip; do
+    blocked_ips[$ip]=1
+done < $BLOCKED_IP_LIST
+
+# fungsi untuk memblokir ip penyerang baru
+function block_ip {
+    lokal ip=$1
+    if [ -z "${blocked_ips[$ip]}" ]; then  # periksa apakah ip sudah  terblokir
+        sudo iptables -A INPUT -s $ip -j DROP
+        if [ $? -eq 0 ]; then
+            echo "$ip" >> $BLOCKED_IP_LIST
+            blocked_ips[$ip]=1
+            echo "IP $ip successfully blocked."
+         else
+            echo "Failed to block IP $ip."
+        fi
+    else
+        echo "IP $ip is already blocked."
+    fi
+}
+
+# loop untuk mengecek log
+tail -Fn0 $LOGFILE | while read line; do
+    echo "Read line: $line"
+    if echo "$line" | grep -q "ALERT"; then
+        IP=$(echo $line | grep -oP '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' | head -1)
+        if [ -n "$IP" ]; then
+            echo "Detected IP: $IP"
+            block_ip $IP
+        else
+            echo "No IP found in ALERT line."
+        fi
+    else
+        echo "No ALERT found in line."
+    fi
+done

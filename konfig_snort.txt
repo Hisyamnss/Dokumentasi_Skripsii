@@ -1,0 +1,71 @@
+……
+# Setup the network addresses you are protecting
+#
+# Note to Debian users: this value is overriden when starting
+# up the Snort daemon through the init.d script by the
+# value of DEBIAN_SNORT_HOME_NET s defined in the
+# /etc/snort/snort.debian.conf configuration file
+#
+ ipvar HOME_NET any
+
+# Set up the external network addresses. Leave as "any" in most situations
+ ipvar EXTERNAL_NET any
+# If HOME_NET is defined as something other than "any", alternative, you can
+# use this definition if you do not want to detect attacks from your internal
+# IP addresses:
+# ipvar EXTERNAL_NET !$HOME_NET
+
+# List of DNS servers on your network
+ipvar DNS_SERVERS $HOME_NET
+
+# List of SMTP servers on your network
+ipvar SMTP_SERVERS $HOME_NET
+
+# List of web servers on your network
+ipvar HTTP_SERVERS any
+
+# List of sql servers on your network
+ipvar SQL_SERVERS $HOME_NET
+
+# List of telnet servers on your network
+ipvar TELNET_SERVERS $HOME_NET
+
+# List of ssh servers on your network
+ipvar SSH_SERVERS $HOME_NET
+
+# List of ftp servers on your network
+ipvar FTP_SERVERS $HOME_NET
+
+# List of sip servers on your network
+ipvar SIP_SERVERS $HOME_NET
+
+# List of ports you run web servers on
+Portvar HTTP_PORTS[80,81,311,383,591,593,901,1220,1414,1741,
+1830,2301,2381,2809,3037,3128,3702,4343,4848,5250,6988,7000,7001,7144,7145,7510,7777,7779,8000,8008,8014,8028,8080,8085,8088,8090,8118,8123,8180,8181,8243,8280,8300,8800,8888,8899,9000,9060,9080,9090,9091,9443,9999,11371,34443,34444,41080,50002,55555]
+
+# List of ports you want to look for SHELLCODE on.
+portvar SHELLCODE_PORTS !80
+
+# List of ports you might see oracle attacks on
+portvar ORACLE_PORTS 1024:
+
+# List of ports you want to look for SSH connections on:
+portvar SSH_PORTS 22
+
+# List of ports you run ftp servers on
+portvar FTP_PORTS [21,2100,3535]
+
+# List of ports you run SIP servers on
+portvar SIP_PORTS [5060,5061,5600]
+
+# List of file data ports for file inspection
+portvar FILE_DATA_PORTS [$HTTP_PORTS,110,143]
+
+# List of GTP ports for GTP preprocessor
+portvar GTP_PORTS [2123,2152,3386]
+
+# other variables, these should not be modified
+ipvar AIM_SERVERS [64.12.24.0/23,64.12.28.0/23,64.12.161.0/24,64.12.163.0/24,64.12.200.0/24,205.188.3.0/24,205.188.5.0/24,205.188.7.0/24,205.188.9.0/24,205.188.153.0/24,205.188.179.0/24,205.188.248.0/24]
+
+config policy_mode:inline
+…………

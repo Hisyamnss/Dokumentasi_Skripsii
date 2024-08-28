@@ -1,0 +1,8 @@
+https://api.telegram.org/bot7124392362:AAEQ_PV279K2zueQq87BU9L3HZgeVr6-rsc7124392362:AAEQ_PV279K2zueQq87BU9L3HZgeVr6-rsc/sendMessage?chat_id=1011249265&text=Coba
+
+delete webhook:
+https://api.telegram.org/bot7124392362:AAEQ_PV279K2zueQq87BU9L3HZgeVr6-rsc/setwebhook
+
+update cht id
+https://api.telegram.org/bot7124392362:AAEQ_PV279K2zueQq87BU9L3HZgeVr6-rsc/getUpdates
+sudo snort -i enp0s3 -c /etc/snort/snort.conf -l /var/log/snort -d -A console > /home/hisyamsrvr/log.txt
